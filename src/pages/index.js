@@ -1,5 +1,5 @@
-import React from 'react'
-import Head from 'next/head'
+import React, { useCallback, useState } from 'react'
+import { useRouter } from 'next/router'
 
 import db from '../../db.json'
 
@@ -7,6 +7,8 @@ import QuizBackground from '../components/QuizBackground'
 import QuizContainer from '../components/QuizContainer'
 import QuizLogo from '../components/QuizLogo'
 import Widget from '../components/Widget'
+import Input from '../components/Input'
+import Button from '../components/Button'
 import Footer from '../components/Footer'
 import GitHubCorner from '../components/GitHubCorner'
 
@@ -18,11 +20,24 @@ import GitHubCorner from '../components/GitHubCorner'
 // `;
 
 const Home = () => {
+  const router = useRouter()
+  const [name, setName] = useState('')
+
+  const handleSubmit = useCallback((event) => {
+    event.preventDefault()
+
+    router.push(`/quiz?name=${name}`)
+
+    console.log('Submitted')
+  }, [])
+
+  const handleChange = useCallback((event) => {
+    setName(event.target.value)
+    console.log(event.target.value)
+  }, [])
+
   return (
     <>
-      <Head>
-        <title>CSS Quiz</title>
-      </Head>
       <QuizBackground backgroundImage={db.bg}>
         <QuizContainer>
           <QuizLogo />
@@ -31,7 +46,14 @@ const Home = () => {
               <h1>{db.title}</h1>
             </Widget.Header>
             <Widget.Content>
-              <p>{db.description}</p>
+              <form onSubmit={handleSubmit}>
+                <Input onChange={handleChange} placeholder="Diz aí seu nome" />
+
+                <Button type="submit" disabled={name.length === 0}>
+                  Jogar
+                  {name}
+                </Button>
+              </form>
             </Widget.Content>
           </Widget>
 
@@ -44,7 +66,7 @@ const Home = () => {
           </Widget>
           <Footer />
         </QuizContainer>
-        <GitHubCorner projectUrl="https://github.com/omariosouto" />
+        <GitHubCorner projectUrl="https://github.com/omariosout" />
       </QuizBackground>
     </>
   )
